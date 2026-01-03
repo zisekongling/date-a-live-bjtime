@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京时间</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background-color: white;
+            padding: 1vw;
+            border-radius: 0;
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transform: scale(0.8);
+            transform-origin: center center;
+        }
+        
+        .date {
+            font-size: 4vw;
+            margin-bottom: 1vw;
+        }
+        
+        .time {
+            font-size: 8vw;
+            margin-bottom: 1vw;
+        }
+        
+        .greeting {
+            font-size: 4vw;
+            margin-bottom: 1vw;
+        }
+        
+        .countdown {
+            font-size: 3vw;
+        }
+        
+        .digit {
+            display: inline-block;
+            margin: 0 0.2vw;
+        }
+        
+        .digit img {
+            max-width: 8vw;
+            max-height: 9vw;
+            vertical-align: middle;
+            width: auto;
+            height: auto;
+        }
+        
+        /* 设置十和万的图片大小，使其与汉字一致 */
+        #ten1 img, #ten2 img, #wan img {
+            max-width: 8vw;
+            max-height: 9vw;
+            vertical-align: middle;
+            width: auto;
+            height: auto;
+        }
+        
+        /* 平板设备 (768px - 1023px) */
+        @media (max-width: 1023px) {
+            .date {
+                font-size: 5vw;
+                margin-bottom: 0.8vw;
+            }
+            
+            .time {
+                font-size: 10vw;
+                margin-bottom: 0.8vw;
+            }
+            
+            .greeting {
+                font-size: 5vw;
+                margin-bottom: 0.8vw;
+            }
+            
+            .countdown {
+                font-size: 4vw;
+            }
+            
+            .container {
+                padding: 1vw;
+                max-width: 100%;
+            }
+            
+            .digit {
+                margin: 0 0.15vw;
+            }
+            
+            .digit img {
+                max-width: 11vw;
+                max-height: 12vw;
+            }
+            
+            #ten1 img, #ten2 img, #wan img {
+                max-width: 11vw;
+                max-height: 12vw;
+            }
+        }
+        
+        /* 手机设备 (480px - 767px) */
+        @media (max-width: 767px) {
+            body {
+                padding: 0;
+            }
+            
+            .date {
+                font-size: 6vw;
+                margin-bottom: 0.6vw;
+            }
+            
+            .time {
+                font-size: 12vw;
+                margin-bottom: 0.6vw;
+            }
+            
+            .greeting {
+                font-size: 6vw;
+                margin-bottom: 0.6vw;
+            }
+            
+            .countdown {
+                font-size: 5vw;
+            }
+            
+            .container {
+                padding: 0.5vw;
+                border-radius: 0;
+            }
+            
+            .digit {
+                margin: 0 0.1vw;
+            }
+            
+            .digit img {
+                max-width: 10vw;
+                max-height: 11vw;
+            }
+            
+            #ten1 img, #ten2 img, #wan img {
+                max-width: 10vw;
+                max-height: 11vw;
+            }
+        }
+        
+        /* 小屏手机和手表设备 (<= 479px) */
+        @media (max-width: 479px) {
+            .date {
+                font-size: 7vw;
+                margin-bottom: 0.5vw;
+            }
+            
+            .time {
+                font-size: 14vw;
+                margin-bottom: 0.5vw;
+            }
+            
+            .greeting {
+                font-size: 7vw;
+                margin-bottom: 0.5vw;
+            }
+            
+            .countdown {
+                font-size: 6vw;
+            }
+            
+            .container {
+                padding: 0;
+            }
+            
+            .digit {
+                margin: 0 0.05vw;
+            }
+            
+            .digit img {
+                max-width: 11vw;
+                max-height: 12vw;
+            }
+            
+            #ten1 img, #ten2 img, #wan img {
+                max-width: 11vw;
+                max-height: 12vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="date" id="date"></div>
+        <div class="time" id="time"></div>
+        <div class="greeting">
+            <span id="ten1">十</span>
+            <span>全</span>
+            <span id="ten2">十</span>
+            <span>美，</span>
+            <span id="wan">万</span>
+            <span>事如意</span>
+        </div>
+        <div class="countdown" id="countdown"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
