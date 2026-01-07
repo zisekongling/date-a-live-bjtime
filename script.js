@@ -1,5 +1,5 @@
-// 初始化资源路径
-const resourcesPath = 'resources/';
+// 初始化资源路径 - 使用直链传输地址
+const resourcesPath = 'https://1816240476.v.123pan.cn/1816240476/直链传输/resources/';
 
 // 存储每个数字的图片文件列表
 let imageFiles = {};
@@ -68,12 +68,36 @@ function digitToImage(digit, type, index) {
     img.alt = digit;
     img.className = `digit-img`;
     
+    // 添加错误处理
+    img.onerror = function() {
+        console.warn(`无法加载图片: ${imgPath}`);
+        // 如果图片加载失败，显示数字文本
+        this.style.display = 'none';
+        const fallbackSpan = document.createElement('span');
+        fallbackSpan.textContent = digit;
+        fallbackSpan.className = 'digit-fallback';
+        this.parentNode.appendChild(fallbackSpan);
+    };
+    
     return img;
 }
 
 // 将数字转换为带图片的HTML
 function numberToImageHtml(number, type) {
-    const digits = number.toString().split('');
+    // 确保number是字符串
+    const numStr = String(number);
+    
+    // 根据不同类型处理补零
+    let finalStr = numStr;
+    if (['hour', 'minute', 'second'].includes(type)) {
+        // 时间组件（小时、分钟、秒钟）进行两位数格式化
+        finalStr = ('0' + numStr).slice(-2);
+    } else if (['year', 'month', 'day', 'countdown', 'week'].includes(type)) {
+        // 年份、月份、日期、倒计时、星期不需要补零
+        finalStr = numStr;
+    }
+    
+    const digits = finalStr.split('');
     
     // 生成每个数字的图片HTML
     const html = digits.map((digit, index) => {
@@ -87,32 +111,74 @@ function numberToImageHtml(number, type) {
     return html;
 }
 
+// 获取中文星期几
+function getChineseWeekday(day) {
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+    return weekdays[day];
+}
+
+// 获取星期几对应的数字（星期日用7）
+function getWeekdayNumber(day) {
+    // day: 0-6，0是星期日
+    if (day === 0) {
+        return '7'; // 星期日用7的图片
+    } else {
+        return String(day); // 星期一至星期六用1-6的图片
+    }
+}
+
+// 优化月份和日期的显示：单数月和单数日隐藏0
+function formatMonthOrDay(value) {
+    // 将字符串转换为数字
+    const num = parseInt(value, 10);
+    // 如果小于10，返回数字本身（不补零）
+    return String(num);
+}
+
 // 更新日期时间
 function updateDateTime() {
     const now = new Date();
     
-    // 格式化日期和时间
+    // 获取日期和时间组件
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hour = String(now.getHours()).padStart(2, '0');
-    const minute = String(now.getMinutes()).padStart(2, '0');
-    const second = String(now.getSeconds()).padStart(2, '0');
+    const month = now.getMonth() + 1; // 月份从0开始，所以+1
+    const day = now.getDate();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const second = now.getSeconds();
+    const weekday = now.getDay(); // 0-6，0是星期日
+    
+    // 获取星期几的中文和数字
+    const weekdayChinese = getChineseWeekday(weekday);
+    const weekdayNumber = getWeekdayNumber(weekday);
     
     // 创建完整时间字符串，用于判断是否需要更新
-    const fullTime = `${year}${month}${day}${hour}${minute}${second}`;
+    const fullTime = `${year}${month}${day}${hour}${minute}${second}${weekday}`;
     
     // 只有当时间变化时才更新DOM，减少不必要的操作
     if (fullTime !== currentFullTime) {
         currentFullTime = fullTime;
         
-        // 更新日期显示
-        const dateElement = document.getElementById('date');
-        dateElement.innerHTML = `${numberToImageHtml(year, 'year')}年${numberToImageHtml(month, 'month')}月${numberToImageHtml(day, 'day')}日`;
+        // 优化月份和日期的显示：单数月和单数日隐藏0
+        const monthStr = formatMonthOrDay(month);
+        const dayStr = formatMonthOrDay(day);
         
-        // 更新时间显示
+        // 更新日期显示，包括星期几
+        const dateElement = document.getElementById('date');
+        dateElement.innerHTML = `
+            ${numberToImageHtml(year, 'year')}年
+            ${numberToImageHtml(monthStr, 'month')}月
+            ${numberToImageHtml(dayStr, 'day')}日 
+            星期<span class="week">${numberToImageHtml(weekdayNumber, 'week')}</span>
+        `;
+        
+        // 更新时间显示（保持两位数格式）
         const timeElement = document.getElementById('time');
-        timeElement.innerHTML = `${numberToImageHtml(hour, 'hour')}:${numberToImageHtml(minute, 'minute')}:${numberToImageHtml(second, 'second')}`;
+        timeElement.innerHTML = `
+            ${numberToImageHtml(hour, 'hour')}:
+            ${numberToImageHtml(minute, 'minute')}:
+            ${numberToImageHtml(second, 'second')}
+        `;
         
         // 更新倒计时
         const nextYear = new Date(now.getFullYear() + 1, 0, 1);
